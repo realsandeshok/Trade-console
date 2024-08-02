@@ -1,6 +1,16 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const cors = require('cors'); // Import the cors package
+const userRoutes = require('./routes/userRoutes');
 
-app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const app = express();
+const port = 3000;
+
+// Use CORS middleware
+app.use(cors()); // This will allow all origins. You can configure it more specifically if needed.
+
+app.use(express.json());
+app.use('/api', userRoutes);
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
