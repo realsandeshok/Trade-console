@@ -48,11 +48,11 @@ class UserController {
     }
   }
   async signupUser(req, res) {
-    const { username, email, password, role } = req.body;
+    const { email, password } = req.body;
     try {
       // Perform validation if needed
-      if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Username, email, and password are required' });
+      if ( !email || !password) {
+        return res.status(400).json({ message: 'Email, and password are required' });
       }
 
       // Check if the email already exists
@@ -65,9 +65,10 @@ class UserController {
       const hashedPassword = password;
 
       // Insert the new user into the database
-      const newUser = await userModel.addUser({ username, email, password: hashedPassword, role });
+      const newUser = await userModel.addUser({  email, password: hashedPassword});
       res.status(201).json({ message: 'User created successfully', user: newUser });
     } catch (error) {
+      // console.log(email,password);
       res.status(500).json({ error: error.message });
     }
   }

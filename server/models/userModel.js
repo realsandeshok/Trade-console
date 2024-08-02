@@ -41,11 +41,11 @@ const getUserByEmail = async (email) => {
   }
 };
 // Function to add a new user to the database
-const addUser = async ({ username, email, password, role = 'user' }) => {
+const addUser = async ({ email, password }) => {
   try {
     const result = await pool.query(
-      'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *',
-      [username, email, password, role]
+      'INSERT INTO users ( email, password) VALUES ($1, $2) RETURNING *',
+      [ email, password]
     );
     return result.rows[0];
   } catch (error) {
