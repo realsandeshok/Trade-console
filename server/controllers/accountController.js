@@ -32,9 +32,80 @@ const addAccount = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+const deleteAccount = async (req, res) => {
+    const { id } = req.params;
 
+    if (!id) {
+        return res.status(400).json({ error: 'Account ID is required' });
+    }
+
+    try {
+        const result = await pool.query('DELETE FROM accounts WHERE id = $1 RETURNING *', [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Account not found' });
+        }
+
+        res.status(200).json({ message: 'Account deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+const updateAccount = async (req, res) => {
+    const { id } = req.params;
+    const { account_name, broker_id, broker } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: 'Account ID is required' });
+    }
+
+    // Construct the SET clause dynamically based on provided fields
+    let setClause = '';
+    const values = [];
+    let valueIndex = 1;
+
+    if (account_name) {
+        setClause += `account_name = $${valueIndex++}, `;
+        values.push(account_name);
+    }
+    if (broker_id) {
+        setClause += `broker_id = $${valueIndex++}, `;
+        values.push(broker_id);
+    }
+    if (broker) {
+        setClause += `broker = $${valueIndex++}, `;
+        values.push(broker);
+    }
+
+    if (setClause === '') {
+        return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    // Remove trailing comma and space
+    setClause = setClause.slice(0, -2);
+    values.push(id);
+
+    try {
+        const result = await pool.query(
+            `UPDATE accounts SET ${setClause} WHERE id = $${valueIndex} RETURNING *`,
+            values
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Account not found' });
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating account:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 module.exports = {
     getAccounts,
-    addAccount
+    addAccount,
+    deleteAccount,
+    updateAccount
 };
