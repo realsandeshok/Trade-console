@@ -11,16 +11,16 @@ const getAccounts = async (req, res) => {
     }
 };
 const addAccount = async (req, res) => {
-    const { account_name, broker_id, broker } = req.body;
+    const { account_name, broker_id, broker, client_code, brokerage_percentage } = req.body;
 
-    if (!account_name || !broker_id || !broker) {
+    if (!account_name || !broker_id || !broker || !client_code || !brokerage_percentage) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
     try {
         const result = await pool.query(
-            'INSERT INTO accounts (account_name, broker_id, broker) VALUES ($1, $2, $3) RETURNING *',
-            [account_name, broker_id, broker]
+            'INSERT INTO accounts (account_name, broker_id, broker, client_code, brokerage_percentage) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [account_name, broker_id, broker, client_code, brokerage_percentage]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -32,6 +32,7 @@ const addAccount = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 const deleteAccount = async (req, res) => {
     const { id } = req.params;
 
@@ -54,7 +55,7 @@ const deleteAccount = async (req, res) => {
 };
 const updateAccount = async (req, res) => {
     const { id } = req.params;
-    const { account_name, broker_id, broker } = req.body;
+    const { account_name, broker_id, broker, client_code, brokerage_percentage } = req.body;
 
     if (!id) {
         return res.status(400).json({ error: 'Account ID is required' });
@@ -76,6 +77,14 @@ const updateAccount = async (req, res) => {
     if (broker) {
         setClause += `broker = $${valueIndex++}, `;
         values.push(broker);
+    }
+    if (client_code) {
+        setClause += `client_code = $${valueIndex++}, `;
+        values.push(client_code);
+    }
+    if (brokerage_percentage) {
+        setClause += `brokerage_percentage = $${valueIndex++}, `;
+        values.push(brokerage_percentage);
     }
 
     if (setClause === '') {
