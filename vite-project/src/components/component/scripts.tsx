@@ -34,7 +34,7 @@ interface Account {
 
 }
 
-export function Accounts() {
+export function Scripts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,10 +182,11 @@ const [newAccountValues, setNewAccountValues] = useState({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  href="/dashboard"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
+                  {/* <PackageIcon className="h-5 w-5" /> */}
                   <UsersIcon className="h-5 w-5" />
                   <span className="sr-only">Accounts</span>
                 </Link>
@@ -195,17 +196,18 @@ const [newAccountValues, setNewAccountValues] = useState({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/scripts"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  href="#"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
-                  {/* <PackageIcon className="h-5 w-5" /> */}
                   <FileText className="h-5 w-5" />
+
                   <span className="sr-only">Scripts</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Scripts</TooltipContent>
             </Tooltip>
+           
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -371,61 +373,61 @@ const [newAccountValues, setNewAccountValues] = useState({
               <CardDescription>Manage your accounts and view details.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead className="hidden sm:table-cell">Broker Id</TableHead>
-                    <TableHead className="hidden sm:table-cell">Client Code</TableHead>
-                    <TableHead className="hidden sm:table-cell">%</TableHead>
-                    <TableHead className="hidden sm:table-cell">Account</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {accounts.map(account => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-medium">{account.account_name}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.broker_id}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.client_code}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.brokerage_percentage}</TableCell>
-                      <TableCell className="hidden sm:table-cell"><Badge>{account.broker}</Badge></TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleEdit(account)}
-                                >
-                                  <FilePenIcon className="h-4 w-4" />
-                                  <span className="sr-only">Edit</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Edit</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDelete(account.id)}
-                                >
-                                  <Trash2Icon className="h-4 w-4" />
-                                  <span className="sr-only">Delete</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Delete</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+               <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead className="hidden sm:table-cell">Broker Id</TableHead>
+          <TableHead className="hidden sm:table-cell">Client Code</TableHead>
+          <TableHead className="hidden sm:table-cell">%</TableHead>
+          <TableHead className="hidden sm:table-cell">Account</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {accounts.map(account => (
+          <TableRow key={account.id}>
+            <TableCell className="font-medium">{account.account_name}</TableCell>
+            <TableCell className="hidden sm:table-cell">{account.broker_id}</TableCell>
+            <TableCell className="hidden sm:table-cell">{account.client_code}</TableCell>
+            <TableCell className="hidden sm:table-cell">{account.brokerage_percentage}</TableCell>
+            <TableCell className="hidden sm:table-cell"><Badge>{account.broker}</Badge></TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(account)}
+                      >
+                        <FilePenIcon className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Edit</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(account.id)}
+                      >
+                        <Trash2Icon className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
               {/* Add Account Modal */}
               {isAddModalOpen && (
         <Dialog open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
