@@ -4,6 +4,8 @@ import { TooltipProvider } from './components/ui/tooltip'; // Import your Toolti
 import { Auth } from './components/component/auth'; // Adjust the path as necessary
 import { Accounts } from './components/component/accounts';
 import { Scripts } from './components/component/scripts';
+import { Test } from './components/component/test';
+import { Trade } from './components/component/trade';
 
 export default function App() {
   return (
@@ -12,8 +14,10 @@ export default function App() {
         <Routes>
           {/* <Route path="/dashboard" element={<Auth />} /> */}
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Accounts />} />
+          <Route path="/accounts" element={<Accounts />} />
           <Route path="/scripts" element={<Scripts />} />
+          <Route path="/test" element={<Test />} />
+          <Route path="/trade" element={<Trade />} />
           
           {/* Add other routes as needed */}
         </Routes>

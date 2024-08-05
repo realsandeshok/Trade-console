@@ -37,7 +37,53 @@ const getScripts = async (req, res) => {
     }
 };
 
+
+
+// Function to delete a script
+const deleteScript = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM scripts WHERE id = $1 RETURNING *',
+            [id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Script not found' });
+        }
+
+        res.status(200).json({ message: 'Script deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting script:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+// Function to update a script
+const updateScript = async (req, res) => {
+    const { id } = req.params;
+    const { name, sector, parent_companies } = req.body;
+
+    try {
+        const result = await pool.query(
+            'UPDATE scripts SET name = $1, sector = $2, parent_companies = $3 WHERE id = $4 RETURNING *',
+            [name, sector, parent_companies, id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Script not found' });
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating script:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 module.exports = {
     addScript,
-    getScripts
+    getScripts,
+    deleteScript,
+    updateScript
 };

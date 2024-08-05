@@ -22,105 +22,90 @@ import { Dialog } from '@headlessui/react';
 
 
 
-// Define the TypeScript interface for the account data
-interface Account {
+interface Script {
   id: number;
-  account_name: string;
-  broker_id: string;
-  broker: string;
-  created_at: string;
-  client_code:string;
-  brokerage_percentage: string;
-
+  name: string;
+  sector: string;
+  parent_companies: string;
 }
 
-export function Accounts() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+export function Test() {
+  const [scripts, setScripts] = useState<Script[]>([]);
+  const [editingScript, setEditingScript] = useState<Script | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formValues, setFormValues] = useState<Omit<Account, 'id' | 'created_at'>>({
-    account_name: '',
-    broker_id: '',
-    broker: '',
-    client_code: '',
-    brokerage_percentage: '',
+  const [formValues, setFormValues] = useState<Omit<Script, 'id'>>({
+    name: '',
+    sector: '',
+    parent_companies: '',
   });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-const [newAccountValues, setNewAccountValues] = useState({
-  account_name: '',
-  broker_id: '',
-  broker: '',
-  client_code: '',
-  brokerage_percentage: '',
-
-
-});
-
+  const [newScriptValues, setNewScriptValues] = useState<Omit<Script, 'id'>>({
+    name: '',
+    sector: '',
+    parent_companies: '',
+  });
 
   useEffect(() => {
     // Fetch data from the API
-    fetch('http://localhost:3000/accounts')
+    fetch('http://localhost:3000/scripts')
       .then(response => response.json())
-      .then((data: Account[]) => setAccounts(data))
+      .then((data: Script[]) => setScripts(data))
       .catch(error => console.error('Error fetching data:', error));
   }, []);
+
   const handleDelete = (id: number) => {
     // Show confirmation dialog
-    const isConfirmed = window.confirm('Are you sure you want to delete this account? This action cannot be undone.');
+    const isConfirmed = window.confirm('Are you sure you want to delete this script? This action cannot be undone.');
 
     if (isConfirmed) {
       // Send DELETE request to the API if confirmed
-      fetch(`http://localhost:3000/accounts/${id}`, {
+      fetch(`http://localhost:3000/scripts/${id}`, {
         method: 'DELETE',
       })
         .then(response => {
           if (response.ok) {
-            // Update state to remove the deleted account
-            setAccounts(prevAccounts => prevAccounts.filter(account => account.id !== id));
+            // Update state to remove the deleted script
+            setScripts(prevScripts => prevScripts.filter(script => script.id !== id));
           } else {
-            console.error('Failed to delete account');
+            console.error('Failed to delete script');
           }
         })
-        .catch(error => console.error('Error deleting account:', error));
+        .catch(error => console.error('Error deleting script:', error));
     }
   };
 
-  const handleNewAccountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewScriptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewAccountValues(prevValues => ({ ...prevValues, [name]: value }));
+    setNewScriptValues(prevValues => ({ ...prevValues, [name]: value }));
   };
-  
+
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
-    fetch('http://localhost:3000/accounts', {
+
+    fetch('http://localhost:3000/scripts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newAccountValues),
+      body: JSON.stringify(newScriptValues),
     })
       .then(response => response.json())
       .then(data => {
-        setAccounts(prevAccounts => [...prevAccounts, data]);
+        setScripts(prevScripts => [...prevScripts, data]);
         setIsAddModalOpen(false);
       })
-      .catch(error => console.error('Error adding account:', error));
+      .catch(error => console.error('Error adding script:', error));
   };
-  
-  const handleEdit = (account: Account) => {
-    setEditingAccount(account);
+
+  const handleEdit = (script: Script) => {
+    setEditingScript(script);
     setFormValues({
-      account_name: account.account_name,
-      broker_id: account.broker_id,
-      broker: account.broker,
-      client_code: account.client_code,
-      brokerage_percentage: account.brokerage_percentage,
+      name: script.name,
+      sector: script.sector,
+      parent_companies: script.parent_companies,
     });
     setIsModalOpen(true);
   };
-  
-  
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -129,9 +114,9 @@ const [newAccountValues, setNewAccountValues] = useState({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingAccount) return;
+    if (!editingScript) return;
 
-    fetch(`http://localhost:3000/accounts/${editingAccount.id}`, {
+    fetch(`http://localhost:3000/scripts/${editingScript.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -140,20 +125,20 @@ const [newAccountValues, setNewAccountValues] = useState({
     })
       .then(response => {
         if (response.ok) {
-          setAccounts(prevAccounts =>
-            prevAccounts.map(account =>
-              account.id === editingAccount.id ? { ...account, ...formValues } : account
+          setScripts(prevScripts =>
+            prevScripts.map(script =>
+              script.id === editingScript.id ? { ...script, ...formValues } : script
             )
           );
           setIsModalOpen(false);
         } else {
-          console.error('Failed to update account');
+          console.error('Failed to update script');
         }
       })
-      .catch(error => console.error('Error updating account:', error));
+      .catch(error => console.error('Error updating script:', error));
   };
 
-  return (
+    return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -169,29 +154,33 @@ const [newAccountValues, setNewAccountValues] = useState({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/test"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  href=""
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
                   <HomeIcon className="h-5 w-5" />
+
                   <span className="sr-only">Dashboard</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
+            
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href=""
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  href="/accounts"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
+                  {/* <PackageIcon className="h-5 w-5" /> */}
                   <UsersIcon className="h-5 w-5" />
                   <span className="sr-only">Accounts</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Accounts</TooltipContent>
             </Tooltip>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -199,13 +188,14 @@ const [newAccountValues, setNewAccountValues] = useState({
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
-                  {/* <PackageIcon className="h-5 w-5" /> */}
                   <FileText className="h-5 w-5" />
                   <span className="sr-only">Scripts</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Scripts</TooltipContent>
             </Tooltip>
+           
+           
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -361,131 +351,108 @@ const [newAccountValues, setNewAccountValues] = useState({
             <div className="ml-auto flex items-center gap-2">
               <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
                 <CirclePlusIcon className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add account</span>
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add script</span>
               </Button>
             </div>
           </div>
           <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
-              <CardTitle>Accounts</CardTitle>
-              <CardDescription>Manage your accounts and view details.</CardDescription>
+            <div className="mt-6 bg-white rounded-lg  p-4">
+            <h2 className="text-4xl font-bold mb-2">Holdings</h2>
+            {/* <p className="text-4xl font-bold">$32,750.00</p> */}
+          </div>
+              {/* <CardDescription>Manage your scripts and view details.</CardDescription> */}
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead className="hidden sm:table-cell">Broker Id</TableHead>
-                    <TableHead className="hidden sm:table-cell">Client Code</TableHead>
-                    <TableHead className="hidden sm:table-cell">%</TableHead>
-                    <TableHead className="hidden sm:table-cell">Account</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {accounts.map(account => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-medium">{account.account_name}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.broker_id}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.client_code}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{account.brokerage_percentage}</TableCell>
-                      <TableCell className="hidden sm:table-cell"><Badge>{account.broker}</Badge></TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleEdit(account)}
-                                >
-                                  <FilePenIcon className="h-4 w-4" />
-                                  <span className="sr-only">Edit</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Edit</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDelete(account.id)}
-                                >
-                                  <Trash2Icon className="h-4 w-4" />
-                                  <span className="sr-only">Delete</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Delete</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {/* Add Account Modal */}
-              {isAddModalOpen && (
+            <table className="w-full">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">Stock</th>
+                  <th className="px-4 py-3 text-left font-medium">Account</th>
+                  <th className="px-4 py-3 text-right font-medium">Shares</th>
+                  <th className="px-4 py-3 text-right font-medium">Current Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="px-4 py-3">Apple Inc.</td>
+                  <td className="px-4 py-3">Brokerage Account</td>
+                  <td className="px-4 py-3 text-right">100</td>
+                  <td className="px-4 py-3 text-right">$12,500.00</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="px-4 py-3">Microsoft Corporation</td>
+                  <td className="px-4 py-3">Retirement Account</td>
+                  <td className="px-4 py-3 text-right">50</td>
+                  <td className="px-4 py-3 text-right">$7,500.00</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="px-4 py-3">Amazon.com, Inc.</td>
+                  <td className="px-4 py-3">Brokerage Account</td>
+                  <td className="px-4 py-3 text-right">25</td>
+                  <td className="px-4 py-3 text-right">$5,000.00</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="px-4 py-3">Tesla, Inc.</td>
+                  <td className="px-4 py-3">Retirement Account</td>
+                  <td className="px-4 py-3 text-right">15</td>
+                  <td className="px-4 py-3 text-right">$3,750.00</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="px-4 py-3">Alphabet Inc. (Google)</td>
+                  <td className="px-4 py-3">Brokerage Account</td>
+                  <td className="px-4 py-3 text-right">20</td>
+                  <td className="px-4 py-3 text-right">$4,000.00</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="mt-6 bg-white rounded-lg shadow-md p-4">
+  <div className="flex justify-between items-center">
+    <h2 className="text-xl font-bold">Total Investment</h2>
+    <p className="text-2xl font-bold">$32,750.00</p>
+  </div>
+</div>
+
+
+      {isAddModalOpen && (
         <Dialog open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
             <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
-              <h2 className="text-lg font-semibold">Add New Account</h2>
+              <h2 className="text-lg font-semibold">Add New Script</h2>
               <form onSubmit={handleAddSubmit} className="mt-4">
                 <label className="block">
-                  Account Name:
+                  Name:
                   <input
                     type="text"
-                    name="account_name"
-                    value={newAccountValues.account_name}
-                    onChange={handleNewAccountChange}
+                    name="name"
+                    value={newScriptValues.name}
+                    onChange={handleNewScriptChange}
                     className="mt-1 block w-full border border-gray-300 rounded p-2"
                   />
                 </label>
                 <label className="block mt-2">
-                  Broker ID:
+                  Sector:
                   <input
                     type="text"
-                    name="broker_id"
-                    value={newAccountValues.broker_id}
-                    onChange={handleNewAccountChange}
+                    name="sector"
+                    value={newScriptValues.sector}
+                    onChange={handleNewScriptChange}
                     className="mt-1 block w-full border border-gray-300 rounded p-2"
                   />
                 </label>
                 <label className="block mt-2">
-                  Broker:
+                  Parent Companies:
                   <input
                     type="text"
-                    name="broker"
-                    value={newAccountValues.broker}
-                    onChange={handleNewAccountChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Client Code:
-                  <input
-                    type="text"
-                    name="client_code"
-                    value={newAccountValues.client_code}
-                    onChange={handleNewAccountChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Brokerage %:
-                  <input
-                    type="number"
-                    name="brokerage_percentage"
-                    value={newAccountValues.brokerage_percentage}
-                    onChange={handleNewAccountChange}
+                    name="parent_companies"
+                    value={newScriptValues.parent_companies}
+                    onChange={handleNewScriptChange}
                     className="mt-1 block w-full border border-gray-300 rounded p-2"
                   />
                 </label>
                 <div className="mt-4 flex gap-2">
-                  <Button type="submit">Add Account</Button>
+                  <Button type="submit">Add Script</Button>
                   <Button type="button" onClick={() => setIsAddModalOpen(false)}>
                     Cancel
                   </Button>
@@ -495,75 +462,56 @@ const [newAccountValues, setNewAccountValues] = useState({
           </div>
         </Dialog>
       )}
-              {isModalOpen && editingAccount && (
-  <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-    <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-    <div className="fixed inset-0 flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
-        <h2 className="text-lg font-semibold">Edit Account</h2>
-        <form onSubmit={handleSubmit} className="mt-4">
-          <label className="block">
-            Account Name:
-            <input
-              type="text"
-              name="account_name"
-              value={formValues.account_name}
-              onChange={handleFormChange}
-              className="mt-1 block w-full border border-gray-300 rounded p-2"
-            />
-          </label>
-          <label className="block mt-2">
-            Broker ID:
-            <input
-              type="text"
-              name="broker_id"
-              value={formValues.broker_id}
-              onChange={handleFormChange}
-              className="mt-1 block w-full border border-gray-300 rounded p-2"
-            />
-          </label>
-          <label className="block mt-2">
-            Broker:
-            <input
-              type="text"
-              name="broker"
-              value={formValues.broker}
-              onChange={handleFormChange}
-              className="mt-1 block w-full border border-gray-300 rounded p-2"
-            />
-          </label>
-          <label className="block mt-2">
-            Client Code:
-            <input
-              type="text"
-              name="client_code"
-              value={formValues.client_code}
-              onChange={handleFormChange}
-              className="mt-1 block w-full border border-gray-300 rounded p-2"
-            />
-          </label>
-          <label className="block mt-2">
-            Brokerage Percentage:
-            <input
-              type="text"
-              name="brokerage_percentage"
-              value={formValues.brokerage_percentage}
-              onChange={handleFormChange}
-              className="mt-1 block w-full border border-gray-300 rounded p-2"
-            />
-          </label>
-          <div className="mt-4 flex gap-2">
-            <Button type="submit">Save Changes</Button>
-            <Button type="button" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </Dialog>
-)}
 
+       {/* Edit Script Modal */}
+       {isModalOpen && editingScript && (
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
+              <h2 className="text-lg font-semibold">Edit Script</h2>
+              <form onSubmit={handleSubmit} className="mt-4">
+                <label className="block">
+                  Name:
+                  <input
+                    type="text"
+                    name="name"
+                    value={formValues.name}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                  />
+                </label>
+                <label className="block mt-2">
+                  Sector:
+                  <input
+                    type="text"
+                    name="sector"
+                    value={formValues.sector}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                  />
+                </label>
+                <label className="block mt-2">
+                  Parent Companies:
+                  <input
+                    type="text"
+                    name="parent_companies"
+                    value={formValues.parent_companies}
+                    onChange={handleFormChange}
+                    className="mt-1 block w-full border border-gray-300 rounded p-2"
+                  />
+                </label>
+                <div className="mt-4 flex gap-2">
+                  <Button type="submit">Save Changes</Button>
+                  <Button type="button" onClick={() => setIsModalOpen(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </Dialog>
+      )}
             </CardContent>
           </Card>
         </main>
