@@ -16,7 +16,7 @@ export default function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/accounts" element={<Accounts />} />
           <Route path="/scripts" element={<Scripts />} />
-          <Route path="/test" element={<Test />} />
+          <Route path="/portfolio" element={<Test />} />
           <Route path="/trade" element={<Trade />} />
           
           {/* Add other routes as needed */}

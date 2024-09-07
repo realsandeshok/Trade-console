@@ -11,11 +11,93 @@ import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbS
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { SVGProps } from "react"
+import { SVGProps, useEffect, useState } from "react"
 import { JSX } from "react/jsx-runtime"
+import { FileText, ArrowRightLeft } from "lucide-react"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 
+interface Scripts {
+  id: number;
+  name: string;
+}
 
+interface accounts{
+  id:number;
+  account_name:string;
+  broker:string;
+  brokerage_percentage:string;
+
+}
 export function Trade() {
+  const [open, setOpen] = useState(false);
+  const [accounts, setAccounts] = useState<accounts[]>([]);
+  const [scripts, setScripts] = useState<Scripts[]>([]);
+
+  const [formData, setFormData] = useState({
+    type: '',
+    script: '',
+    quantity: '',
+    cost: '',
+    brokerage: '',
+    date: '',
+    account: ''
+  });
+
+  // Fetch accounts from the API
+  useEffect(() => {
+    async function fetchAccounts() {
+      try {
+        const response = await fetch('http://localhost:3000/accounts');
+        const data = await response.json();
+        setAccounts(data);
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+      }
+    }
+    fetchAccounts();
+  }, []);
+
+  useEffect(() => {
+    async function fetchScripts() {
+      try {
+        const response = await fetch('http://localhost:3000/scripts');
+        const data = await response.json();
+        setScripts(data);
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+      }
+    }
+    fetchScripts();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle account selection
+  const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedAccount = accounts.find(account => account.account_name === e.target.value);
+    setFormData({
+      ...formData,
+      account: selectedAccount?.account_name || '',
+      brokerage: selectedAccount?.brokerage_percentage || ''  // Set brokerage based on selected account
+    });
+  };
+  const handleScriptChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedScript = scripts.find(script => script.name === e.target.value);
+    setFormData({
+      ...formData,
+      script: selectedScript?.name || '',  // Set the script name based on the selected script
+    });
+  };
+  
+  const handleSubmit = () => {
+    console.log('Form submitted:', formData);
+    setOpen(false);
+  };
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -32,7 +114,7 @@ export function Trade() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/portfolio"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
@@ -45,41 +127,44 @@ export function Trade() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/accounts"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  prefetch={false}
+                >
+                  {/* <PackageIcon className="h-5 w-5" /> */}
+                  <UsersIcon className="h-5 w-5" />
+                  <span className="sr-only">Accounts</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Accounts</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/scripts"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  prefetch={false}
+                >
+                  <FileText className="h-5 w-5" />
+
+                  <span className="sr-only">Scripts</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Scripts</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href=""
                   className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
-                  <UsersIcon className="h-5 w-5" />
-                  <span className="sr-only">Users</span>
+                  <ArrowRightLeft className="h-5 w-5" />
+                  <span className="sr-only">Trade</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Users</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <PackageIcon className="h-5 w-5" />
-                  <span className="sr-only">Products</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Products</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <UsersIcon className="h-5 w-5" />
-                  <span className="sr-only">Customers</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Customers</TooltipContent>
+              <TooltipContent side="right">Trade</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -207,7 +292,7 @@ export function Trade() {
             <Button variant="outline" size="sm">
               Export
             </Button>
-            <Button size="sm">Buy</Button>
+            <Button size="sm" onClick={() => setOpen(true)}>Buy</Button>
             <Button size="sm">Sell</Button>
           </div>
         </header>
@@ -278,6 +363,95 @@ export function Trade() {
                   </TableRow>
                 </TableBody>
               </Table>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Buy Share</DialogTitle>
+                  </DialogHeader>
+
+                  <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+                    <div className="space-y-4">
+                      
+                     
+
+                      <select
+                        name="Scripts"
+                        value={formData.script}
+                        onChange={handleScriptChange}
+                        required
+                        className="w-full border p-2"
+                      >
+                        <option value="">Select Script</option>
+                        {scripts.map(script => (
+                          <option key={script.id} value={script.name}>
+                            {script.name} 
+                          </option>
+                        ))}
+                      </select>  
+
+                      <Input
+                       
+                        placeholder="Enter quantity"
+                        type="number"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <Input
+                       
+                        placeholder="Enter cost"
+                        type="number"
+                        name="cost"
+                        value={formData.cost}
+                        onChange={handleInputChange}
+                        required
+                      />
+
+                      {/* Dropdown for selecting account */}
+                      
+                      <select
+                        name="account"
+                        value={formData.account}
+                        onChange={handleAccountChange}
+                        required
+                        className="w-full border p-2"
+                      >
+                        <option value="">Select an account</option>
+                        {accounts.map(account => (
+                          <option key={account.id} value={account.account_name}>
+                            {account.account_name} ({account.broker})
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Show brokerage automatically based on selected account */}
+                      <Input
+                       
+                        placeholder="Brokerage percentage"
+                        type="number"
+                        name="brokerage"
+                        value={formData.brokerage}
+                        readOnly
+                      />
+
+                      <Input
+                       
+                        placeholder="Enter date"
+                        type="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <DialogFooter className="p-3">
+                      <Button type="submit" size="sm">Submit</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </main>

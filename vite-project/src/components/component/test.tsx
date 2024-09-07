@@ -17,8 +17,9 @@ import { Badge } from "@/components/ui/badge"
 import { SVGProps, useEffect, useState } from "react"
 import { JSX } from "react/jsx-runtime"
 // import { DropdownMenuCheckboxItem } from "@radix-ui/react-dropdown-menu"
-import { ArrowRightLeft, CirclePlusIcon,   FilePenIcon, FileText, Trash2Icon } from "lucide-react"
+import { ArrowRightLeft, CirclePlusIcon, FilePenIcon, FileText, Trash2Icon } from "lucide-react"
 import { Dialog } from '@headlessui/react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 
 
@@ -138,7 +139,7 @@ export function Test() {
       .catch(error => console.error('Error updating script:', error));
   };
 
-    return (
+  return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -165,7 +166,7 @@ export function Test() {
               </TooltipTrigger>
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
-            
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -194,8 +195,8 @@ export function Test() {
               </TooltipTrigger>
               <TooltipContent side="right">Scripts</TooltipContent>
             </Tooltip>
-           
-           
+
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -203,7 +204,7 @@ export function Test() {
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   prefetch={false}
                 >
-                   <ArrowRightLeft className="h-5 w-5" />
+                  <ArrowRightLeft className="h-5 w-5" />
                   <span className="sr-only">Trade</span>
                 </Link>
               </TooltipTrigger>
@@ -357,168 +358,181 @@ export function Test() {
           </div>
           <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
-            <div className="mt-6 bg-white rounded-lg  p-4">
-            <h2 className="text-4xl font-bold mb-2">Holdings</h2>
-            {/* <p className="text-4xl font-bold">$32,750.00</p> */}
-          </div>
+              <div className="mt-6 bg-white rounded-lg  p-4">
+                <h2 className="text-4xl font-bold mb-2">Holdings</h2>
+                {/* <p className="text-4xl font-bold">$32,750.00</p> */}
+              </div>
               {/* <CardDescription>Manage your scripts and view details.</CardDescription> */}
+
+
+
             </CardHeader>
+
             <CardContent>
-            <table className="w-full">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium">Stock</th>
-                  <th className="px-4 py-3 text-left font-medium">Account</th>
-                  <th className="px-4 py-3 text-right font-medium">Shares</th>
-                  <th className="px-4 py-3 text-right font-medium">Current Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="px-4 py-3">Apple Inc.</td>
-                  <td className="px-4 py-3">Brokerage Account</td>
-                  <td className="px-4 py-3 text-right">100</td>
-                  <td className="px-4 py-3 text-right">$12,500.00</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-3">Microsoft Corporation</td>
-                  <td className="px-4 py-3">Retirement Account</td>
-                  <td className="px-4 py-3 text-right">50</td>
-                  <td className="px-4 py-3 text-right">$7,500.00</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-3">Amazon.com, Inc.</td>
-                  <td className="px-4 py-3">Brokerage Account</td>
-                  <td className="px-4 py-3 text-right">25</td>
-                  <td className="px-4 py-3 text-right">$5,000.00</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-3">Tesla, Inc.</td>
-                  <td className="px-4 py-3">Retirement Account</td>
-                  <td className="px-4 py-3 text-right">15</td>
-                  <td className="px-4 py-3 text-right">$3,750.00</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-3">Alphabet Inc. (Google)</td>
-                  <td className="px-4 py-3">Brokerage Account</td>
-                  <td className="px-4 py-3 text-right">20</td>
-                  <td className="px-4 py-3 text-right">$4,000.00</td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="mt-6 bg-white rounded-lg shadow-md p-4">
-  <div className="flex justify-between items-center">
-    <h2 className="text-xl font-bold">Total Investment</h2>
-    <p className="text-2xl font-bold">$32,750.00</p>
-  </div>
-</div>
 
-
-      {isAddModalOpen && (
-        <Dialog open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
-              <h2 className="text-lg font-semibold">Add New Script</h2>
-              <form onSubmit={handleAddSubmit} className="mt-4">
-                <label className="block">
-                  Name:
-                  <input
-                    type="text"
-                    name="name"
-                    value={newScriptValues.name}
-                    onChange={handleNewScriptChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Sector:
-                  <input
-                    type="text"
-                    name="sector"
-                    value={newScriptValues.sector}
-                    onChange={handleNewScriptChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Parent Companies:
-                  <input
-                    type="text"
-                    name="parent_companies"
-                    value={newScriptValues.parent_companies}
-                    onChange={handleNewScriptChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <div className="mt-4 flex gap-2">
-                  <Button type="submit">Add Script</Button>
-                  <Button type="button" onClick={() => setIsAddModalOpen(false)}>
-                    Cancel
-                  </Button>
+            <Tabs defaultValue="account" className="">
+                <TabsList>
+                  <TabsTrigger value="account">General</TabsTrigger>
+                  <TabsTrigger value="password">Summary</TabsTrigger>
+                </TabsList>
+                <TabsContent value="password">Change your password here.</TabsContent>
+                <TabsContent value="account"><table className="w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium">Stock</th>
+                    <th className="px-4 py-3 text-left font-medium">Account</th>
+                    <th className="px-4 py-3 text-right font-medium">Shares</th>
+                    <th className="px-4 py-3 text-right font-medium">Current Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="px-4 py-3">Apple Inc.</td>
+                    <td className="px-4 py-3">Brokerage Account</td>
+                    <td className="px-4 py-3 text-right">100</td>
+                    <td className="px-4 py-3 text-right">$12,500.00</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-4 py-3">Microsoft Corporation</td>
+                    <td className="px-4 py-3">Retirement Account</td>
+                    <td className="px-4 py-3 text-right">50</td>
+                    <td className="px-4 py-3 text-right">$7,500.00</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-4 py-3">Amazon.com, Inc.</td>
+                    <td className="px-4 py-3">Brokerage Account</td>
+                    <td className="px-4 py-3 text-right">25</td>
+                    <td className="px-4 py-3 text-right">$5,000.00</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-4 py-3">Tesla, Inc.</td>
+                    <td className="px-4 py-3">Retirement Account</td>
+                    <td className="px-4 py-3 text-right">15</td>
+                    <td className="px-4 py-3 text-right">$3,750.00</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-4 py-3">Alphabet Inc. (Google)</td>
+                    <td className="px-4 py-3">Brokerage Account</td>
+                    <td className="px-4 py-3 text-right">20</td>
+                    <td className="px-4 py-3 text-right">$4,000.00</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="mt-6 bg-white rounded-lg shadow-md p-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold">Total Investment</h2>
+                  <p className="text-2xl font-bold">$32,750.00</p>
                 </div>
-              </form>
-            </div>
-          </div>
-        </Dialog>
-      )}
+              </div></TabsContent>
+              </Tabs>
+              
 
-       {/* Edit Script Modal */}
-       {isModalOpen && editingScript && (
-        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
-              <h2 className="text-lg font-semibold">Edit Script</h2>
-              <form onSubmit={handleSubmit} className="mt-4">
-                <label className="block">
-                  Name:
-                  <input
-                    type="text"
-                    name="name"
-                    value={formValues.name}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Sector:
-                  <input
-                    type="text"
-                    name="sector"
-                    value={formValues.sector}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <label className="block mt-2">
-                  Parent Companies:
-                  <input
-                    type="text"
-                    name="parent_companies"
-                    value={formValues.parent_companies}
-                    onChange={handleFormChange}
-                    className="mt-1 block w-full border border-gray-300 rounded p-2"
-                  />
-                </label>
-                <div className="mt-4 flex gap-2">
-                  <Button type="submit">Save Changes</Button>
-                  <Button type="button" onClick={() => setIsModalOpen(false)}>
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </Dialog>
-      )}
+
+              {isAddModalOpen && (
+                <Dialog open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+                  <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                  <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
+                      <h2 className="text-lg font-semibold">Add New Script</h2>
+                      <form onSubmit={handleAddSubmit} className="mt-4">
+                        <label className="block">
+                          Name:
+                          <input
+                            type="text"
+                            name="name"
+                            value={newScriptValues.name}
+                            onChange={handleNewScriptChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <label className="block mt-2">
+                          Sector:
+                          <input
+                            type="text"
+                            name="sector"
+                            value={newScriptValues.sector}
+                            onChange={handleNewScriptChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <label className="block mt-2">
+                          Parent Companies:
+                          <input
+                            type="text"
+                            name="parent_companies"
+                            value={newScriptValues.parent_companies}
+                            onChange={handleNewScriptChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <div className="mt-4 flex gap-2">
+                          <Button type="submit">Add Script</Button>
+                          <Button type="button" onClick={() => setIsAddModalOpen(false)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </Dialog>
+              )}
+
+              {/* Edit Script Modal */}
+              {isModalOpen && editingScript && (
+                <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                  <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                  <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-auto">
+                      <h2 className="text-lg font-semibold">Edit Script</h2>
+                      <form onSubmit={handleSubmit} className="mt-4">
+                        <label className="block">
+                          Name:
+                          <input
+                            type="text"
+                            name="name"
+                            value={formValues.name}
+                            onChange={handleFormChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <label className="block mt-2">
+                          Sector:
+                          <input
+                            type="text"
+                            name="sector"
+                            value={formValues.sector}
+                            onChange={handleFormChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <label className="block mt-2">
+                          Parent Companies:
+                          <input
+                            type="text"
+                            name="parent_companies"
+                            value={formValues.parent_companies}
+                            onChange={handleFormChange}
+                            className="mt-1 block w-full border border-gray-300 rounded p-2"
+                          />
+                        </label>
+                        <div className="mt-4 flex gap-2">
+                          <Button type="submit">Save Changes</Button>
+                          <Button type="button" onClick={() => setIsModalOpen(false)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </Dialog>
+              )}
             </CardContent>
           </Card>
         </main>
       </div>
     </div>
   )
-  
+
 }
 
 function HomeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
