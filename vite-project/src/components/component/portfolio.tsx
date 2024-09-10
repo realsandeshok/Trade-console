@@ -3,6 +3,8 @@ import Link from "next/link"
 
 export function Portfolio() {
   return (
+
+    
     <div className="flex min-h-screen flex-col">
       <header className="bg-primary text-primary-foreground py-4 px-6 shadow-sm">
         <div className="container mx-auto flex items-center justify-between">
