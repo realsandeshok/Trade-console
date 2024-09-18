@@ -15,7 +15,6 @@ import { SVGProps, useEffect, useState } from "react"
 import { JSX } from "react/jsx-runtime"
 import { FileText, ArrowRightLeft } from "lucide-react"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
-
 interface Scripts {
   id: number;
   name: string;
@@ -28,10 +27,24 @@ interface accounts{
   brokerage_percentage:string;
 
 }
+
+interface transactions {
+  id: number;
+  script_name: string;
+  quantity: string;
+  market_cost: string;
+  brokerage: string;
+  purchase_date: string;
+  account_name: string;
+  // Add other fields as necessary
+};
+
+
 export function Trade() {
   const [open, setOpen] = useState(false);
   const [accounts, setAccounts] = useState<accounts[]>([]);
   const [scripts, setScripts] = useState<Scripts[]>([]);
+  const [transactions, setTransactions] = useState<transactions[]>([]);
 
   const [formData, setFormData] = useState({
     type: '',
@@ -57,6 +70,7 @@ export function Trade() {
     fetchAccounts();
   }, []);
 
+
   useEffect(() => {
     async function fetchScripts() {
       try {
@@ -69,6 +83,27 @@ export function Trade() {
     }
     fetchScripts();
   }, []);
+
+
+  // fetch transactions
+  useEffect(() => {
+    // Fetch transactions
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/transactions/');
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+        const data = await response.json();
+        setTransactions(data);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -94,10 +129,42 @@ export function Trade() {
     });
   };
   
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    setOpen(false);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/transactions/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          script_name: formData.script,
+          quantity: formData.quantity,
+          market_cost: formData.cost,
+          brokerage: formData.brokerage,
+          purchase_date: formData.date,
+          account_id: accounts.find(account => account.account_name === formData.account)?.id
+        }),
+      });
+  
+      if (!response.ok) {
+        // Handle non-2xx HTTP responses
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'An error occurred');
+      }
+  
+      const data = await response.json();
+      // Handle the response as needed, e.g., show a success message, update UI, etc.
+      console.log('Transaction added:', data);
+  
+      // Close the dialog after successful submission
+      setOpen(false);
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      // Handle the error appropriately, e.g., show an error message
+    }
   };
+
+  
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -310,57 +377,37 @@ export function Trade() {
                     <TableHead>Symbol</TableHead>
                     <TableHead>Quantity</TableHead>
                     <TableHead>Price</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Account</TableHead>
+                    <TableHead>Brokerage</TableHead>
+                    <TableHead>Total Cost</TableHead>
+                    <TableHead>Total Purchase Value</TableHead>
+                    <TableHead>Purchase Date</TableHead>
+                    <TableHead>Account Holder</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Buy</TableCell>
-                    <TableCell>BTC</TableCell>
-                    <TableCell>0.5</TableCell>
-                    <TableCell>$50,000</TableCell>
-                    <TableCell>$25,000</TableCell>
-                    <TableCell>2023-04-15</TableCell>
-                    <TableCell>Main Account</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Sell</TableCell>
-                    <TableCell>ETH</TableCell>
-                    <TableCell>2</TableCell>
-                    <TableCell>$2,000</TableCell>
-                    <TableCell>$4,000</TableCell>
-                    <TableCell>2023-05-01</TableCell>
-                    <TableCell>Savings Account</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Buy</TableCell>
-                    <TableCell>LTC</TableCell>
-                    <TableCell>1</TableCell>
-                    <TableCell>$200</TableCell>
-                    <TableCell>$200</TableCell>
-                    <TableCell>2023-06-10</TableCell>
-                    <TableCell>Main Account</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Sell</TableCell>
-                    <TableCell>BTC</TableCell>
-                    <TableCell>0.2</TableCell>
-                    <TableCell>$55,000</TableCell>
-                    <TableCell>$11,000</TableCell>
-                    <TableCell>2023-07-20</TableCell>
-                    <TableCell>Savings Account</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Buy</TableCell>
-                    <TableCell>ETH</TableCell>
-                    <TableCell>0.5</TableCell>
-                    <TableCell>$1,800</TableCell>
-                    <TableCell>$900</TableCell>
-                    <TableCell>2023-08-05</TableCell>
-                    <TableCell>Main Account</TableCell>
-                  </TableRow>
+                {transactions.map(transaction => {
+                  const marketCost = parseInt(transaction.market_cost);
+                  const brokerage = parseInt(transaction.brokerage);
+                  const quantity = parseInt(transaction.quantity);
+              
+                  // Calculate total cost with brokerage
+                  const totalCostWithBrokerage = marketCost + (marketCost * brokerage / 100);
+                  const totalValue = totalCostWithBrokerage * quantity;
+                  
+                  return (
+                    <TableRow key={transaction.id}>
+                      <TableCell className="font-medium">Buy</TableCell>
+                      <TableCell>{transaction.script_name}</TableCell>
+                      <TableCell>{transaction.quantity}</TableCell>
+                      <TableCell>₹{marketCost} </TableCell>
+                      <TableCell>{brokerage}%</TableCell>
+                      <TableCell>₹{totalCostWithBrokerage}</TableCell>
+                      <TableCell>₹{totalValue}</TableCell>
+                      <TableCell>{transaction.purchase_date.slice(0,10)}</TableCell>
+                      <TableCell>{transaction.account_name}</TableCell>
+                    </TableRow>
+                  )
+                })}
                 </TableBody>
               </Table>
               <Dialog open={open} onOpenChange={setOpen}>
@@ -371,9 +418,6 @@ export function Trade() {
 
                   <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
                     <div className="space-y-4">
-                      
-                     
-
                       <select
                         name="Scripts"
                         value={formData.script}

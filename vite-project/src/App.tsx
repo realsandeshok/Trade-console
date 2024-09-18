@@ -13,12 +13,11 @@ export default function App() {
       <Router>
         <Routes>
           {/* <Route path="/dashboard" element={<Auth />} /> */}
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<Auth />} />
           <Route path="/accounts" element={<Accounts />} />
           <Route path="/scripts" element={<Scripts />} />
           <Route path="/portfolio" element={<Test />} />
           <Route path="/trade" element={<Trade />} />
-          
           {/* Add other routes as needed */}
         </Routes>
       </Router>

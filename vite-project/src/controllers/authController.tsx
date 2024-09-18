@@ -24,7 +24,7 @@ export async function Login(email: string, password: string) {
             }
 
             // Navigate to the home page
-            window.location.href = "/dashboard";
+            window.location.href = "/portfolio";
         } else {
             // Handle error
             console.error('Login failed:', data);
